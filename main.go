@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -29,6 +30,7 @@ func main() {
 	qs := time.Now().AddDate(0, 0, -7).Format("2006-01-02")
 
 	query := flag.String("q", "created:>"+qs, "Input uery string")
+	lang := flag.String("l", "", "Select language")
 	issue := flag.Bool("i", false, "Sort help-wanted-issues num")
 	asc := flag.Bool("a", false, "Order ascend")
 	num := flag.Int("n", 5, "Input list num (<= 15)")
@@ -45,17 +47,19 @@ func main() {
 
 	params := req.URL.Query()
 	params.Add("q", *query)
-	sort := "stars"
-	if *issue {
-		sort = "help-wanted-issues"
+	params.Add("sort", "stars")
+	params.Add("order", "desc")
+
+	if *lang != "" {
+		params.Set("q", "language:"+*lang+"+"+*query)
 	}
-	params.Add("sort", sort)
-	order := "desc"
 	if *asc {
-		order = "asc"
+		params.Set("order", "asc")
 	}
-	params.Add("order", order)
-	req.URL.RawQuery = params.Encode()
+	if *issue {
+		params.Set("sort", "help-wanted-issues")
+	}
+	req.URL.RawQuery = strings.ReplaceAll(params.Encode(), "%2B", "+") // need replace '%2B' to '+'
 
 	resp, err := client.Do(req)
 	if err != nil {
