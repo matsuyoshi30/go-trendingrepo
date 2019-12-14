@@ -23,6 +23,7 @@ type Repository struct {
 	CreatedAt   time.Time `json:"created_at"`
 	HTMLURL     string    `json:"html_url"`
 	Homepage    string    `json:"homepage"`
+	StarCount   int       `json:"stargazers_count"`
 	Language    string    `json:"language"`
 }
 
@@ -89,6 +90,7 @@ func main() {
 		fmt.Printf("[Created At]  %s\n", r.CreatedAt)
 		fmt.Printf("[URL]         %s\n", r.HTMLURL)
 		fmt.Printf("[Homepage]    %s\n", r.Homepage)
+		fmt.Printf("[Star]        %d\n", r.StarCount)
 		fmt.Printf("[Language]    %s\n", r.Language)
 	}
 }
